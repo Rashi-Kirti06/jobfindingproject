@@ -1,0 +1,5 @@
+class ErError{
+    constructor(){
+
+    }
+}

@@ -1,0 +1,37 @@
+import cron from "node-cron";
+import { Job } from "../models/jobSchema.js";
+import { User } from "../models/userSchema.js";
+import {sendEmail} from "../utils/sendEmail.js";
+
+
+export const newsLetterCron = () =>{
+    cron.schedule("*/1 * * * *", async()=>{
+        // console.log("Running news letter cron automation.");
+        const jobs = await Job.find({newLettersSent: false});
+        for(const job of jobs){
+            try {
+                const filterUsers = await User.find({
+                    $or:[
+                        {"niches.firstNiche": job.jobNiche},
+                        {"niches.secondNiche": job.jobNiche},
+                        {"niches.thirdNiche": job.jobNiche},
+                    ]
+                });
+                for(const user of filterUsers){
+                    const subject = `Hot Job Alert: ${job.title} in ${job.location} in ${job.jobNiche} Available Now`;
+                    const message = `Hi ${user.name}, \n\n Great News! A new job that fits your niche has just been posted. the position is for a ${job.title} with ${job.companyName}`;
+                    sendEmail({
+                        email: user.email,
+                        subject,
+                        message
+                    })
+                }
+                job.newLettersSent = true;
+                await job.save();
+            } catch (error) {
+                console.log("ERROR IN NODE CRON CATCH BLOCK");
+                return next(console.log(error || "Some error in cron."));
+            }
+        }
+    });
+}

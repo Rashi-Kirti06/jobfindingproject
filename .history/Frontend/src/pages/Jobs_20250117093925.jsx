@@ -1,0 +1,17 @@
+import React, { useState } from 'react'
+import {useSelector} from "r"
+const Jobs = () => {
+  const {city, setCity} = useState("");
+  const {selectedCity, setSelectedCity} = useState("");
+  const {niche, setNiche} = useState("");
+  const {selectedNiche, setSelectedNiche} = useState("");
+  const {searchKeyword, setSearchKeyword} = useState("");
+
+  const {} = useSelector
+  
+  return (
+    <div>Jobs</div>
+  )
+}
+
+export default Jobs
